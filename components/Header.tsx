@@ -15,9 +15,9 @@ import {
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Anime", href: "/media/anime" },
-  { label: "Web Series", href: "/media/web-series" },
-  { label: "Adult Show", href: "/media/adult-show" },
+  { label: "Anime", href: "/?category=anime" },
+  { label: "Web Series", href: "/?category=web-series" },
+  { label: "Adult Show", href: "/?category=adult-show" },
 ];
 
 export default function Header() {

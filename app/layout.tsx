@@ -58,10 +58,10 @@ export default function RootLayout({
       className={`${poppins.variable} ${mono.variable} h-full antialiased`}
     >
       <head>
-        <Script
+        {/* <Script
           src="https://cdn-in.pagesense.io/js/domisecinnovations/f4c3cdc2ab084ceea1a568c83e83da0d.js"
           strategy="afterInteractive"
-        />
+        /> */}
       </head>
       <body className="flex flex-col min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
         <ThemeProvider>{children} </ThemeProvider>

@@ -92,7 +92,7 @@ export default function CategoriesSection() {
           categories.map((category) => (
             <Link
               key={category.id}
-              href={`/category/${category.slug}`}
+              href={`/?category=${category.slug}`}
               className="
                 group relative overflow-hidden
                 rounded-xl

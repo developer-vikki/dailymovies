@@ -48,12 +48,7 @@ export default function Top10HeroFeed() {
         download_count,
         movies (
           *,
-         categories!movies_category_id_fkey (
-  slug,
-  name
-)
-        )
-      `,
+         categories!movies_category_id_fkey ( slug, name ) )`,
       )
       .order("download_count", { ascending: false })
       .limit(10);
@@ -99,7 +94,7 @@ export default function Top10HeroFeed() {
             </div>
 
             <div>
-              <h2 className="text-2xl font-black tracking-tight text-white md:text-3xl">
+              <h2 className="text-1xl font-black tracking-tight text-white md:text-2xl">
                 Top 10 Weekend Downloads
               </h2>
 
@@ -112,12 +107,12 @@ export default function Top10HeroFeed() {
       </div>
 
       {/* Movie Grid */}
-      <div className="relative z-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
         {loading
-          ? Array.from({ length: 10 }).map((_, index) => (
+          ? Array.from({ length: 7 }).map((_, index) => (
               <div
                 key={`skeleton-${index}`}
-                className="animate-pulse overflow-hidden rounded-2xl border border-white/5 bg-white/3"
+                className="animate-pulse overflow-hidden rounded-1xl border border-white/5 bg-white/3"
               >
                 <div className="aspect-2/3 w-full bg-white/5" />
 
@@ -128,7 +123,7 @@ export default function Top10HeroFeed() {
               </div>
             ))
           : movies.map((movie, index) => {
-              const href = `/${
+              const href = `media/${
                 movie.categories?.slug || "media"
               }/${movie.slug}`;
 
@@ -136,7 +131,7 @@ export default function Top10HeroFeed() {
                 <Link
                   href={href}
                   key={movie.id}
-                  className="group relative block overflow-hidden rounded-2xl border border-white/10 bg-[#0b1120]/80 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-cyan-400/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.18)]"
+                  className="group relative block overflow-hidden rounded-xl border border-white/10 bg-[#0b1120]/80 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]"
                 >
                   {/* Poster */}
                   <div className="relative aspect-2/3 overflow-hidden">
@@ -158,28 +153,28 @@ export default function Top10HeroFeed() {
 
                     {/* Hover Play */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-md">
-                        <Play className="ml-1 h-6 w-6 fill-white text-white" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-md">
+                        <Play className="ml-0.5 h-4 w-4 fill-white text-white" />
                       </div>
                     </div>
 
                     {/* Rank */}
-                    <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-cyan-500 text-sm font-black text-white shadow-lg shadow-cyan-500/40">
+                    <div className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-cyan-500 text-[10px] font-black text-white shadow-lg shadow-cyan-500/40">
                       #{index + 1}
                     </div>
 
                     {/* Category */}
                     {movie.categories?.name && (
-                      <div className="absolute right-3 top-3 rounded-full border border-white/10 bg-black/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white/80 backdrop-blur-md">
+                      <div className="absolute right-2 top-2 rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white/80 backdrop-blur-md">
                         {movie.categories.name}
                       </div>
                     )}
 
                     {/* Bottom Content */}
-                    <div className="absolute inset-x-0 bottom-0 p-4">
+                    <div className="absolute inset-x-0 bottom-0 p-3">
                       <h3
                         title={movie.title}
-                        className="line-clamp-1 text-lg font-bold text-white transition-colors duration-300 group-hover:text-cyan-300"
+                        className="line-clamp-1 text-sm font-bold text-white transition-colors duration-300 group-hover:text-cyan-300"
                       >
                         {movie.title}
                       </h3>
@@ -194,7 +189,7 @@ export default function Top10HeroFeed() {
                         <span className="h-1 w-1 rounded-full bg-white/30" />
 
                         <div className="flex items-center gap-1 text-yellow-400">
-                          <Star className="h-3.5 w-3.5 fill-current" />
+                          <Star className="h-3 w-3 fill-current" />
                           <span className="font-semibold">
                             {movie.imdb_rating
                               ? movie.imdb_rating.toFixed(1)
@@ -204,14 +199,14 @@ export default function Top10HeroFeed() {
                       </div>
 
                       {/* Downloads */}
-                      <div className="mt-3 flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 rounded-full bg-cyan-500/10 px-2.5 py-1 text-xs font-semibold text-cyan-300">
-                          <DownloadIcon className="h-3.5 w-3.5" />
+                      <div className="mt-2 flex items-center justify-between">
+                        <div className="flex items-center gap-1 rounded-full bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold text-cyan-300">
+                          <DownloadIcon className="h-3 w-3" />
                           {movie.downloads}
                         </div>
 
-                        <span className="translate-y-2 text-xs font-medium text-white/0 transition-all duration-300 group-hover:translate-y-0 group-hover:text-white/70">
-                          View →
+                        <span className="translate-y-2 text-[10px] font-medium text-white/0 transition-all duration-300 group-hover:translate-y-0 group-hover:text-white/70">
+                          →
                         </span>
                       </div>
                     </div>
