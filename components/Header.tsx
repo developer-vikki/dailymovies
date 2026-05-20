@@ -5,15 +5,16 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { Menu, X, Search, Sparkles, Clapperboard } from "lucide-react";
+import { Menu, X, Search, Clapperboard, Mail } from "lucide-react";
 
 import { useSearchParams, useRouter } from "next/navigation";
 
 const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Anime", href: "/?category=anime" },
-  { label: "Web Series", href: "/?category=web-series" },
-  { label: "Adult Show", href: "/?category=adult-show" },
+  { label: "Home", href: "/", icon: null },
+  { label: "Anime", href: "/?category=anime", icon: null },
+  { label: "Web Series", href: "/?category=web-series", icon: null },
+  { label: "Adult Show", href: "/?category=adult-show", icon: null },
+  { label: "Contact Us", href: "/contact-us", icon: Mail },
 ];
 
 export default function Header() {
@@ -40,10 +41,10 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#050816]/80 backdrop-blur-2xl">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#050816]/90 backdrop-blur-2xl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Top Navbar */}
-        <div className="flex h-20 items-center justify-between">
+        {/* Row 1: Logo & Nav & Mobile Toggle */}
+        <div className="flex h-16 items-center justify-between border-b border-white/5 lg:border-none">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-400/10">
@@ -67,8 +68,9 @@ export default function Header() {
               const itemCategory = item.href.split("category=")[1] || null;
 
               const active =
-                currentCategory === itemCategory ||
-                (!currentCategory && item.label === "Home");
+                item.label !== "Contact Us" &&
+                (currentCategory === itemCategory ||
+                  (!currentCategory && item.label === "Home"));
 
               return (
                 <Link
@@ -79,7 +81,7 @@ export default function Header() {
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
-                    {active && <Sparkles className="h-3.5 w-3.5" />}
+                    {item.icon && <item.icon className="h-3.5 w-3.5" />}
                     {item.label}
                   </span>
 
@@ -91,21 +93,6 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Desktop Search */}
-          <div className="hidden xl:flex items-center gap-3">
-            <div className="flex h-12 w-[320px] items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4">
-              <Search className="h-4 w-4 text-white/40" />
-
-              <input
-                type="text"
-                defaultValue={currentSearch}
-                placeholder="Search movies..."
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full bg-transparent text-sm text-white placeholder:text-white/35 outline-none"
-              />
-            </div>
-          </div>
-
           {/* Mobile Menu Button */}
           <button
             onClick={() => setOpen(!open)}
@@ -114,7 +101,43 @@ export default function Header() {
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
+
+        {/* Row 2: Search Bar (Visible on all screens) */}
+        <div className="flex h-14 items-center pb-3 pt-1">
+          <div className="flex h-10 w-full max-w-md items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 transition-focus-within:border-cyan-400/30">
+            <Search className="h-4 w-4 text-white/40" />
+            <input
+              type="text"
+              defaultValue={currentSearch}
+              placeholder="Search movies, series, anime..."
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-full bg-transparent text-sm text-white placeholder:text-white/35 outline-none"
+            />
+          </div>
+        </div>
       </div>
+
+      {/* Mobile Menu & Search */}
+      {open && (
+        <div className="lg:hidden border-t border-white/10 bg-[#050816] p-4">
+          {/* Mobile Nav Links */}
+          <nav className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="px-4 py-3 text-sm font-medium text-white/65 hover:text-cyan-300 hover:bg-white/5 rounded-xl transition"
+              >
+                <span className="flex items-center gap-2">
+                  {item.icon && <item.icon className="h-4 w-4" />}
+                  {item.label}
+                </span>
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

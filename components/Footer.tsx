@@ -28,10 +28,10 @@ export default function Footer() {
   ];
 
   const legalLinks = [
-    "Privacy Policy",
-    "Terms of Service",
-    "DMCA",
-    "Disclaimer",
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Terms of Service", href: "/terms-conditions" },
+    { label: "DMCA", href: "/dmca" },
+    { label: "Disclaimer", href: "/disclaimer" },
   ];
 
   const categories = [
@@ -160,11 +160,11 @@ export default function Footer() {
             <div className="flex items-center gap-5">
               {legalLinks.map((item) => (
                 <Link
-                  key={item}
-                  href="#"
+                  key={item.label}
+                  href={item.href}
                   className="text-xs text-white/35 transition hover:text-cyan-300"
                 >
-                  {item}
+                  {item.label}
                 </Link>
               ))}
             </div>

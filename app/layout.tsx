@@ -33,13 +33,13 @@ export const metadata: Metadata = {
 
   creator: "Movies Hub",
 
-  metadataBase: new URL("https://dailymovies.in"),
+  metadataBase: new URL("https://dailymovies.online"),
 
   openGraph: {
     title: "Daily Movies Hub",
     description:
       "Download Latest Movies, TV Shows, and Web Series in Full HD. Explore our vast collection of entertainment content and enjoy seamless streaming and downloading experience.",
-    url: "https://dailymovies.in",
+    url: "https://dailymovies.online",
     siteName: "Daily Movies Hub",
     locale: "en_US",
     type: "website",

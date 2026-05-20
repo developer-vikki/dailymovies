@@ -1,17 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import {
   Star,
-  Download,
   PlayCircle,
   CalendarDays,
   Clock3,
-  BadgeInfo,
   ArrowLeft,
   MonitorPlay,
-  Languages,
-  HardDrive,
 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +19,85 @@ type PageProps = {
     slug: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+
+  const supabase = await createClient();
+
+  const { data: movie } = await supabase
+    .from("movies")
+    .select(
+      `
+      *,
+      categories!movies_category_id_fkey (
+        name,
+        slug
+      )
+    `,
+    )
+    .eq("slug", slug)
+    .single();
+
+  if (!movie) {
+    return {
+      title: "Movie Not Found | DailyMovies",
+    };
+  }
+
+  const title = `${movie.title} (${new Date(
+    movie.release_date,
+  ).getFullYear()}) Download HD`;
+
+  const description =
+    movie.description ||
+    `${movie.title} full movie download in ${movie.quality} quality. Watch and download latest movies online.`;
+
+  const image = movie.poster_url || "/placeholder.png";
+
+  return {
+    title,
+    description,
+    keywords: [
+      movie.title,
+      `${movie.title} download`,
+      `${movie.title} full movie`,
+      `${movie.title} watch online`,
+      `${movie.quality} movies`,
+      movie.categories?.name,
+    ],
+
+    openGraph: {
+      title,
+      description,
+      url: `https://dailymovies.watch/media/${movie.categories?.slug}/${movie.slug}`,
+      siteName: "DailyMovies",
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: movie.title,
+        },
+      ],
+      locale: "en_US",
+      type: "video.movie",
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+
+    alternates: {
+      canonical: `https://dailymovies.watch/media/${movie.categories?.slug}/${movie.slug}`,
+    },
+  };
+}
 
 export default async function MovieDetailsPage({ params }: PageProps) {
   const { slug } = await params;
@@ -85,17 +161,20 @@ export default async function MovieDetailsPage({ params }: PageProps) {
     .neq("id", movie.id)
     .limit(6);
 
+  // SEO Metadata
+
   return (
     <main className="min-h-screen bg-[#050816] text-white">
       {/* HERO */}
       <section className="relative min-h-[95vh] overflow-hidden">
         {/* BACKDROP */}
         <Image
-          src={movie.backdrop_url || "/placeholder.png"}
+          src={movie.poster_url || "/placeholder.png"}
           alt={movie.title}
           fill
           priority
-          className="object-cover opacity-25"
+          sizes="(max-width: 768px) 100vw, 400px"
+          className="object-cover"
         />
 
         {/* OVERLAY */}
@@ -126,6 +205,7 @@ export default async function MovieDetailsPage({ params }: PageProps) {
                   alt={movie.title}
                   fill
                   priority
+                  sizes="(max-width: 768px) 100vw, 400px"
                   className="object-cover"
                 />
               </div>
@@ -207,7 +287,9 @@ export default async function MovieDetailsPage({ params }: PageProps) {
                       src={movie.poster_url || "/placeholder.png"}
                       alt={movie.title}
                       fill
-                      className="object-cover transition duration-500 hover:scale-105"
+                      priority
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      className="object-cover"
                     />
                   </div>
                 ))}
@@ -270,10 +352,12 @@ export default async function MovieDetailsPage({ params }: PageProps) {
             >
               <div className="relative aspect-2/3 overflow-hidden">
                 <Image
-                  src={relatedMovie.poster_url || "/placeholder.png"}
-                  alt={relatedMovie.title}
+                  src={movie.poster_url || "/placeholder.png"}
+                  alt={movie.title}
                   fill
-                  className="object-cover transition duration-500 group-hover:scale-105"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 400px"
+                  className="object-cover"
                 />
               </div>
 
