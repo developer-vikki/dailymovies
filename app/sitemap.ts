@@ -79,7 +79,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const movieRoutes: MetadataRoute.Sitemap = (movies || [])
     .filter((movie) => movie.slug && movie.category?.slug)
     .map((movie) => ({
-      url: `${baseUrl}/${movie.category?.slug}/${movie.slug}`,
+      url: `${baseUrl}/media/${movie.category?.slug}/${movie.slug}`,
 
       lastModified: movie.created_at ? new Date(movie.created_at) : new Date(),
 
