@@ -159,7 +159,7 @@ export default function MovieFeeds() {
       {/* Poster */}
       <div className="relative aspect-2/3 overflow-hidden">
         <Image
-          src={movie.poster_url || "/media/movie-placeholder.png"}
+          src={movie.poster_url || "/placeholder.png"}
           alt={movie.title}
           fill
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
