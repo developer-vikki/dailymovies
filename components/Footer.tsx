@@ -14,9 +14,18 @@ export default function Footer() {
     });
   };
 
-  const socialIcons = [FaInstagram, FaTelegram];
+  const socialLinks = [
+    { icon: FaInstagram, href: "https://instagram.com/dailymovie_watch" },
+    { icon: FaTelegram, href: "https://t.me/dailymovie_watch" },
+  ];
 
-  const quickLinks = ["Home", "Movies", "TV Shows", "Trending", "New Releases"];
+  const quickLinks = [
+    { label: "Home", href: "/" },
+    { label: "Movies", href: "/?category=movies" },
+    { label: "TV Shows", href: "/?category=tv-shows" },
+    { label: "Trending", href: "/?category=trending" },
+    { label: "New Releases", href: "/?category=new-releases" },
+  ];
 
   const legalLinks = [
     "Privacy Policy",
@@ -25,7 +34,13 @@ export default function Footer() {
     "Disclaimer",
   ];
 
-  const categories = ["Action", "Sci-Fi", "Anime", "Comedy", "Horror"];
+  const categories = [
+    { label: "Action", href: "/?category=action" },
+    { label: "Sci-Fi", href: "/?category=sci-fi" },
+    { label: "Anime", href: "/?category=anime" },
+    { label: "Comedy", href: "/?category=comedy" },
+    { label: "Horror", href: "/?category=horror" },
+  ];
 
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-[#030712]">
@@ -61,13 +76,15 @@ export default function Footer() {
 
             {/* Social */}
             <div className="mt-7 flex items-center gap-3">
-              {socialIcons.map((Icon, index) => (
-                <button
+              {socialLinks.map((social, index) => (
+                <Link
                   key={index}
+                  href={social.href}
+                  target="_blank"
                   className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white/70 transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-cyan-300"
                 >
-                  <Icon className="h-4 w-4" />
-                </button>
+                  <social.icon className="h-4 w-4" />
+                </Link>
               ))}
             </div>
           </div>
@@ -81,11 +98,11 @@ export default function Footer() {
             <div className="mt-6 flex flex-col gap-4">
               {quickLinks.map((item) => (
                 <Link
-                  key={item}
-                  href="#"
+                  key={item.label}
+                  href={item.href}
                   className="w-fit text-sm text-white/60 transition hover:text-cyan-300"
                 >
-                  {item}
+                  {item.label}
                 </Link>
               ))}
             </div>
@@ -99,12 +116,13 @@ export default function Footer() {
 
             <div className="mt-6 flex flex-wrap gap-3">
               {categories.map((item) => (
-                <button
-                  key={item}
+                <Link
+                  key={item.label}
+                  href={item.href}
                   className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-xs font-medium text-cyan-200 transition hover:bg-cyan-400/20"
                 >
-                  {item}
-                </button>
+                  {item.label}
+                </Link>
               ))}
             </div>
           </div>
@@ -120,10 +138,12 @@ export default function Footer() {
               uploads and trending movies.
             </p>
 
-            <button className="group mt-7 flex h-12 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 text-sm font-medium text-white transition hover:border-cyan-400/30 hover:bg-cyan-400/10">
-              <Send className="h-4 w-4 text-cyan-300 transition group-hover:translate-x-1" />
-              Join Telegram
-            </button>
+            <Link href="https://t.me/dailymovie_watch" target="_blank">
+              <button className="group mt-7 flex h-12 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 text-sm font-medium text-white transition hover:border-cyan-400/30 hover:bg-cyan-400/10">
+                <Send className="h-4 w-4 text-cyan-300 transition group-hover:translate-x-1" />
+                Join Telegram
+              </button>
+            </Link>
           </div>
         </div>
 
