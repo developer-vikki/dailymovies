@@ -66,6 +66,9 @@ export default async function MovieDetailsPage({ params }: PageProps) {
     .select("*")
     .eq("movie_id", movie.id);
 
+  // console.log("MOVIE ID:", movie.id);
+  // console.log("DOWNLOADS:", downloads);
+
   // RELATED MOVIES
   const { data: relatedMovies } = await supabase
     .from("movies")
@@ -88,7 +91,7 @@ export default async function MovieDetailsPage({ params }: PageProps) {
       <section className="relative min-h-[95vh] overflow-hidden">
         {/* BACKDROP */}
         <Image
-          src={movie.backdrop_url || movie.poster_url}
+          src={movie.backdrop_url || "/placeholder.png"}
           alt={movie.title}
           fill
           priority
@@ -102,200 +105,149 @@ export default async function MovieDetailsPage({ params }: PageProps) {
         <div className="absolute left-1/2 top-0 h-125 w-125 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
 
         {/* CONTENT */}
-        <div className="relative z-10 container mx-auto px-4 py-8 md:py-16">
-          {/* BACK */}
+        <div className="relative z-10 container mx-auto px-4 py-8 lg:py-14">
+          {/* BACK BUTTON */}
           <Link
             href="/"
-            className="mb-8 inline-flex items-center gap-2 text-sm text-zinc-400 transition hover:text-cyan-400"
+            className="mb-6 inline-flex items-center gap-2 text-sm text-zinc-400 transition hover:text-cyan-400"
           >
             <ArrowLeft size={16} />
             Back to Home
           </Link>
 
-          <div className="grid gap-10 lg:grid-cols-[320px_1fr] lg:items-end">
-            {/* POSTER */}
-            <div className="mx-auto w-full max-w-[320px]">
-              <div className="relative aspect-2/3 overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-cyan-500/10">
+          {/* MAIN CARD */}
+          <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl">
+            {/* TOP AREA */}
+            <div className="grid gap-6 p-5 lg:grid-cols-[280px_1fr]">
+              {/* POSTER */}
+              <div className="relative aspect-2/3 overflow-hidden rounded-2xl border border-white/10">
                 <Image
-                  src={movie.poster_url}
+                  src={movie.poster_url || "/placeholder.png"}
                   alt={movie.title}
                   fill
                   priority
                   className="object-cover"
                 />
               </div>
+
+              {/* INFO */}
+              <div className="flex flex-col justify-between">
+                <div>
+                  {/* CATEGORY */}
+                  <div className="mb-3 inline-flex rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-cyan-300">
+                    {movie.categories?.name || "Movie"}
+                  </div>
+
+                  {/* TITLE */}
+                  <h1 className="text-3xl font-black leading-tight md:text-5xl">
+                    {movie.title}
+                  </h1>
+
+                  {/* META */}
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm">
+                      <Star
+                        size={15}
+                        className="fill-yellow-400 text-yellow-400"
+                      />
+                      {movie.imdb_rating || "8.5"}
+                    </div>
+
+                    <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm">
+                      <CalendarDays size={15} />
+                      {movie.release_date
+                        ? new Date(movie.release_date).getFullYear()
+                        : "2025"}
+                    </div>
+
+                    <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm">
+                      <Clock3 size={15} />
+                      {movie.duration || "2h 10m"}
+                    </div>
+
+                    <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm">
+                      <MonitorPlay size={15} />
+                      {movie.quality || "HD"}
+                    </div>
+                  </div>
+
+                  {/* DESCRIPTION */}
+                  <p className="mt-6 max-w-3xl text-sm leading-7 text-zinc-300 md:text-base">
+                    {movie.description || "No description available."}
+                  </p>
+                </div>
+
+                {/* WATCH BUTTON */}
+                {movie.video_url && (
+                  <div className="mt-6">
+                    <a
+                      href={movie.video_url}
+                      target="_blank"
+                      className="inline-flex items-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 text-sm font-bold text-black transition hover:bg-cyan-400"
+                    >
+                      <PlayCircle size={18} />
+                      Watch Now
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* DETAILS */}
-            <div>
-              {/* CATEGORY */}
-              <div className="mb-4 inline-flex rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-cyan-300">
-                {movie.categories?.name}
-              </div>
+            {/* SCREENSHOTS */}
+            <div className="border-t border-white/10 p-5">
+              <h2 className="mb-4 text-lg font-bold text-white">Screenshots</h2>
 
-              {/* TITLE */}
-              <h1 className="max-w-4xl text-3xl font-black leading-tight md:text-5xl lg:text-6xl">
-                {movie.title}
-              </h1>
-
-              {/* META */}
-              <div className="mt-5 flex flex-wrap items-center gap-4 text-sm text-zinc-300">
-                {/* RATING */}
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                  <Star size={14} className="fill-yellow-400 text-yellow-400" />
-
-                  <span className="font-medium">
-                    {movie.imdb_rating || "8.5"}
-                  </span>
-                </div>
-
-                {/* DATE */}
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                  <CalendarDays size={14} />
-
-                  <span>
-                    {movie.release_date
-                      ? new Date(movie.release_date).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "short",
-                          },
-                        )
-                      : "2025"}
-                  </span>
-                </div>
-
-                {/* DURATION */}
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                  <Clock3 size={14} />
-
-                  <span>{movie.duration || "2h 10m"}</span>
-                </div>
-
-                {/* QUALITY */}
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                  <MonitorPlay size={14} />
-
-                  <span>{movie.quality || "HD"}</span>
-                </div>
-              </div>
-
-              {/* DESCRIPTION */}
-              <p className="mt-6 max-w-3xl text-sm leading-7 text-zinc-300 md:text-base">
-                {movie.description || "No description available."}
-              </p>
-
-              {/* ACTION BUTTONS */}
-              <div className="mt-8 flex flex-wrap gap-3">
-                {/* WATCH */}
-                {movie.video_url && (
-                  <a
-                    href={movie.video_url}
-                    target="_blank"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-black transition hover:bg-cyan-400"
+              <div className="flex gap-4 overflow-x-auto pb-2">
+                {[1, 2, 3, 4].map((item) => (
+                  <div
+                    key={item}
+                    className="relative aspect-video min-w-70 overflow-hidden rounded-2xl border border-white/10"
                   >
-                    <PlayCircle size={18} />
-                    Watch Now
-                  </a>
-                )}
+                    <Image
+                      src={movie.poster_url || "/placeholder.png"}
+                      alt={movie.title}
+                      fill
+                      className="object-cover transition duration-500 hover:scale-105"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
 
-                {/* DOWNLOADS */}
+            {/* DOWNLOADS */}
+            <div className="border-t border-white/10 p-5">
+              <h2 className="mb-4 text-lg font-bold text-white">
+                Download Links
+              </h2>
+
+              <div className="grid gap-3">
                 {downloads?.map((download) => (
                   <a
                     key={download.id}
                     href={download.download_url}
                     target="_blank"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:border-cyan-400/40 hover:bg-white/10"
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4 transition hover:border-cyan-400/40 hover:bg-white/10"
                   >
-                    <Download size={16} />
+                    <div>
+                      <p className="font-semibold text-white">
+                        Download {download.quality || "HD"}
+                      </p>
 
-                    {download.quality}
+                      <p className="mt-1 text-xs text-zinc-400">
+                        {download.file_size_mb
+                          ? download.file_size_mb >= 1024
+                            ? `${(download.file_size_mb / 1024).toFixed(2)} GB`
+                            : `${download.file_size_mb} MB`
+                          : "700 MB"}
+                      </p>
+                    </div>
 
-                    {download.file_size_mb && (
-                      <span className="text-xs text-zinc-400">
-                        ({download.file_size_mb}MB)
-                      </span>
-                    )}
+                    <div className="rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-black">
+                      Download
+                    </div>
                   </a>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* INFO SECTION */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="grid gap-6 lg:grid-cols-[350px_1fr]">
-          {/* INFO CARD */}
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <div className="mb-5 flex items-center gap-2 text-cyan-400">
-              <BadgeInfo size={18} />
-
-              <h2 className="text-lg font-bold">Movie Information</h2>
-            </div>
-
-            <div className="space-y-4">
-              {/* LANGUAGE */}
-              <div className="flex items-center justify-between rounded-2xl bg-black/30 p-4">
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <Languages size={16} />
-
-                  <span className="text-sm">Language</span>
-                </div>
-
-                <span className="text-sm font-medium">
-                  {movie.language || "English"}
-                </span>
-              </div>
-
-              {/* QUALITY */}
-              <div className="flex items-center justify-between rounded-2xl bg-black/30 p-4">
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <MonitorPlay size={16} />
-
-                  <span className="text-sm">Quality</span>
-                </div>
-
-                <span className="text-sm font-medium">
-                  {movie.quality || "HD"}
-                </span>
-              </div>
-
-              {/* STORAGE */}
-              <div className="flex items-center justify-between rounded-2xl bg-black/30 p-4">
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <HardDrive size={16} />
-
-                  <span className="text-sm">Downloads</span>
-                </div>
-
-                <span className="text-sm font-medium">
-                  {movie.downloads_count || "10K+"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* SCREENSHOTS */}
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <h2 className="mb-5 text-xl font-bold">Screenshots</h2>
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map((item) => (
-                <div
-                  key={item}
-                  className="group relative aspect-video overflow-hidden rounded-2xl"
-                >
-                  <Image
-                    src={movie.backdrop_url || movie.poster_url}
-                    alt={movie.title}
-                    fill
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -318,7 +270,7 @@ export default async function MovieDetailsPage({ params }: PageProps) {
             >
               <div className="relative aspect-2/3 overflow-hidden">
                 <Image
-                  src={relatedMovie.poster_url}
+                  src={relatedMovie.poster_url || "/placeholder.png"}
                   alt={relatedMovie.title}
                   fill
                   className="object-cover transition duration-500 group-hover:scale-105"
