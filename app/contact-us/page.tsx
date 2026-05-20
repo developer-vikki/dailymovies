@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header";
 import { Mail, ShieldCheck, MessageCircle } from "lucide-react";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Contact Us - DailyMovies",
@@ -12,7 +13,9 @@ export const metadata = {
 export default function ContactUsPage() {
   return (
     <>
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
 
       <main className="min-h-screen bg-black px-6 py-12 text-white">
         <div className="mx-auto max-w-5xl">

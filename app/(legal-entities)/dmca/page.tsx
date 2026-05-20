@@ -1,11 +1,14 @@
 // app/dmca/page.tsx
 
 import Header from "@/components/Header";
+import { Suspense } from "react";
 
 export default function DMCAPage() {
   return (
     <>
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
 
       <main className="min-h-screen bg-black px-6 py-12 text-white">
         <div className="mx-auto max-w-5xl rounded-2xl border border-zinc-800 bg-zinc-950 p-8 shadow-2xl">

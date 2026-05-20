@@ -39,8 +39,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     )
     .returns<Movie[]>();
 
-  console.log("MOVIES:", movies);
-
   if (movieError) {
     console.log("MOVIE ERROR:", movieError);
   }
