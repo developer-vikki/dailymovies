@@ -64,7 +64,7 @@ export default function DMCAPage() {
               <p className="text-zinc-300">
                 Email:{" "}
                 <span className="font-medium text-white">
-                  copyright@dailymovies.example
+                  copyright@dailymovies.online
                 </span>
               </p>
             </div>

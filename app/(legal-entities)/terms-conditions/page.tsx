@@ -231,7 +231,7 @@ export default function TermsAndConditionsPage() {
               <p className="text-zinc-300">
                 Email:{" "}
                 <span className="font-medium text-white">
-                  contact@dailymovies.example
+                  contact@dailymovies.online
                 </span>
               </p>
             </div>

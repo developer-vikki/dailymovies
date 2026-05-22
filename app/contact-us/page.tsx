@@ -48,7 +48,7 @@ export default function ContactUsPage() {
                 <p className="text-sm text-zinc-400">Email</p>
 
                 <p className="mt-1 font-medium text-white">
-                  contact@dailymovies.example
+                  contact@dailymovies.online
                 </p>
               </div>
             </div>
@@ -69,7 +69,7 @@ export default function ContactUsPage() {
                 <p className="text-sm text-zinc-400">Email</p>
 
                 <p className="mt-1 font-medium text-white">
-                  copyright@dailymovies.example
+                  copyright@dailymovies.online
                 </p>
               </div>
             </div>
@@ -91,7 +91,7 @@ export default function ContactUsPage() {
                 <p className="text-sm text-zinc-400">Email</p>
 
                 <p className="mt-1 font-medium text-white">
-                  business@dailymovies.example
+                  business@dailymovies.online
                 </p>
               </div>
             </div>

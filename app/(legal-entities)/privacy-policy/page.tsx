@@ -6,7 +6,7 @@ import { Suspense } from "react";
 export default function PrivacyPolicyPage() {
   return (
     <>
-        <Suspense fallback={null}>
+      <Suspense fallback={null}>
         <Header />
       </Suspense>
       <main className="min-h-screen bg-black text-white px-6 py-12">
@@ -317,7 +317,7 @@ export default function PrivacyPolicyPage() {
               <p className="text-zinc-300">
                 Email:{" "}
                 <span className="font-medium text-white">
-                  contact@dailymovies.example
+                  contact@dailymovies.online
                 </span>
               </p>
             </div>

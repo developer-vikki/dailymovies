@@ -7,17 +7,20 @@ import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Clapperboard, Download, Play, Star } from "lucide-react";
 
+type Category = {
+  slug: string;
+  name: string;
+};
+
 type Movie = {
   id: string;
   title: string;
   slug: string;
-  poster_url: string;
-  imdb_rating: number;
-  release_date: string;
-  categories: {
-    slug: string;
-    name: string;
-  };
+  poster_url: string | null;
+  imdb_rating: number | null;
+  release_date: string | null;
+
+  categories?: Category | null;
 };
 
 const PAGE_SIZE = 12;
@@ -29,16 +32,17 @@ export default function MovieFeeds() {
   const [hasMore, setHasMore] = useState(true);
 
   const searchParams = useSearchParams();
+
   const category = searchParams.get("category");
   const search = searchParams.get("search");
 
-  // Prevent Race Conditions during rapid typing/searching
   const fetchIdRef = useRef(0);
 
+  // ---------------------------------------------------------
   // FETCH MOVIES
+  // ---------------------------------------------------------
   const fetchMovies = useCallback(
     async (currentPage: number, isReset: boolean = false) => {
-      // Create a unique ID for this specific fetch request
       const currentFetchId = ++fetchIdRef.current;
       setLoading(true);
 
@@ -46,60 +50,86 @@ export default function MovieFeeds() {
       const to = from + PAGE_SIZE - 1;
       const supabase = createClient();
 
-      // 1. Determine join syntax based on category filter
-      const joinQuery = category
-        ? `categories!movies_category_id_fkey!inner(slug, name)`
-        : `categories!movies_category_id_fkey(slug, name)`;
+      // 1. DYNAMIC QUERY STRUCTURE
+      // We must use !inner joins ONLY when we are actively filtering by category.
+      // Otherwise, movies with 0 categories would be excluded from the general feed.
+      const selectQuery = category
+        ? `
+            id, title, slug, poster_url, imdb_rating, release_date,
+            movie_categories!inner (
+              categories!inner (
+                slug,
+                name
+              )
+            )
+          `
+        : `
+            id, title, slug, poster_url, imdb_rating, release_date,
+            movie_categories (
+              categories (
+                slug,
+                name
+              )
+            )
+          `;
 
-      // 2. Initialize Query
-      let queryBuilder = supabase.from("movies").select(`*, ${joinQuery}`);
+      let query = supabase.from("movies").select(selectQuery);
 
-      // 3. Apply Filters FIRST
+      // 2. APPLY FILTERS
       if (category) {
-        queryBuilder = queryBuilder.eq("categories.slug", category);
+        query = query.eq("movie_categories.categories.slug", category);
       }
 
-      if (search) {
-        const searchTerm = search.trim();
-        if (searchTerm !== "") {
-          queryBuilder = queryBuilder.ilike("title", `%${searchTerm}%`);
-        }
+      if (search?.trim()) {
+        query = query.ilike("title", `%${search.trim()}%`);
       }
 
-      // 4. Apply Order and Pagination LAST (Crucial for Supabase filters to work)
-      const { data, error } = await queryBuilder
+      // 3. FETCH & PAGINATE
+      const { data, error } = await query
         .order("created_at", { ascending: false })
         .range(from, to);
 
-      // 5. Guard against race conditions (discard if a newer fetch started)
-      if (currentFetchId !== fetchIdRef.current) {
-        return;
-      }
+      if (currentFetchId !== fetchIdRef.current) return;
 
       if (error) {
-        console.error("Supabase error message:", error.message);
-        console.error("Supabase error details:", error.details);
+        console.error("Supabase error:", error);
+        setMovies([]);
         setLoading(false);
         return;
       }
 
-      const fetchedMovies = data || [];
+      // 4. TRANSFORM DATA
+      const transformed: Movie[] = (data || []).map((movie: any) => {
+        // Flatten the junction table array into a clean array of Category objects
+        const extractedCategories = (movie.movie_categories || [])
+          .map((mc: any) => mc.categories)
+          .filter(Boolean); // Remove any nulls
 
-      // CHECK MORE DATA
-      setHasMore(fetchedMovies.length === PAGE_SIZE);
+        // Sort alphabetically to guarantee a stable first category selection
+        extractedCategories.sort((a: Category, b: Category) =>
+          a.name.localeCompare(b.name),
+        );
 
-      // UPDATE STATE WITH DEDUPLICATION
+        return {
+          id: movie.id,
+          title: movie.title,
+          slug: movie.slug,
+          poster_url: movie.poster_url,
+          imdb_rating: movie.imdb_rating,
+          release_date: movie.release_date,
+          // Safely grab the first alphabetically sorted category
+          categories:
+            extractedCategories.length > 0 ? extractedCategories[0] : null,
+        };
+      });
+
+      setHasMore(transformed.length === PAGE_SIZE);
+
       setMovies((prev) => {
-        if (isReset) return fetchedMovies;
-
-        const newMovies = [...prev];
-        fetchedMovies.forEach((movie) => {
-          // Prevent React duplicate key errors during fast appending
-          if (!newMovies.some((m) => m.id === movie.id)) {
-            newMovies.push(movie);
-          }
-        });
-        return newMovies;
+        if (isReset) return transformed;
+        const existingIds = new Set(prev.map((m) => m.id));
+        const uniqueMovies = transformed.filter((m) => !existingIds.has(m.id));
+        return [...prev, ...uniqueMovies];
       });
 
       setLoading(false);
@@ -107,25 +137,30 @@ export default function MovieFeeds() {
     [category, search],
   );
 
-  // INITIAL FETCH (Triggers when Search or Category changes)
+  // ---------------------------------------------------------
+  // RESET FETCH
+  // ---------------------------------------------------------
   useEffect(() => {
     setPage(0);
     setHasMore(true);
+
     fetchMovies(0, true);
   }, [category, search, fetchMovies]);
 
-  // NEXT PAGE FETCH (Triggers on Infinite Scroll)
+  // ---------------------------------------------------------
+  // NEXT PAGE FETCH
+  // ---------------------------------------------------------
   useEffect(() => {
     if (page === 0) return;
-    fetchMovies(page, false);
+
+    fetchMovies(page);
   }, [page, fetchMovies]);
 
-  // -----------------------------------------------------------------
-  // OPTIMIZED INFINITE SCROLL OBSERVER
-  // -----------------------------------------------------------------
+  // ---------------------------------------------------------
+  // INFINITE SCROLL
+  // ---------------------------------------------------------
   const observer = useRef<IntersectionObserver | null>(null);
 
-  // Keep track of latest state without causing observer re-renders
   const loadingRef = useRef(loading);
   const hasMoreRef = useRef(hasMore);
 
@@ -135,7 +170,9 @@ export default function MovieFeeds() {
   }, [loading, hasMore]);
 
   const lastMovieRef = useCallback((node: HTMLDivElement | null) => {
-    if (observer.current) observer.current.disconnect();
+    if (observer.current) {
+      observer.current.disconnect();
+    }
 
     observer.current = new IntersectionObserver((entries) => {
       if (
@@ -147,16 +184,19 @@ export default function MovieFeeds() {
       }
     });
 
-    if (node) observer.current.observe(node);
-  }, []); // Empty dependency array prevents glitchy re-attachments
+    if (node) {
+      observer.current.observe(node);
+    }
+  }, []);
 
+  // ---------------------------------------------------------
   // MOVIE CARD
+  // ---------------------------------------------------------
   const renderMovieCard = (movie: Movie) => (
     <Link
       href={`/media/${movie.categories?.slug || "unknown"}/${movie.slug}`}
       className="group relative block overflow-hidden rounded-xl border border-white/10 bg-[#0b1120]/80 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]"
     >
-      {/* Poster */}
       <div className="relative aspect-2/3 overflow-hidden">
         <Image
           src={movie.poster_url || "/placeholder.png"}
@@ -201,7 +241,8 @@ export default function MovieFeeds() {
 
             <div className="flex items-center gap-1 text-yellow-400">
               <Star className="h-3 w-3 fill-current" />
-              <span className="font-semibold">{movie.imdb_rating}</span>
+
+              <span className="font-semibold">{movie.imdb_rating || "NR"}</span>
             </div>
           </div>
 

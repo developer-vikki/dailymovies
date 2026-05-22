@@ -15,12 +15,15 @@ type Movie = {
   release_date: string | null;
   imdb_rating: number | null;
   poster_url: string | null;
-  category_id: string | null;
+
   downloads?: string;
-  categories?: {
-    slug: string;
-    name: string;
-  } | null;
+
+  movie_categories?: {
+    categories?: {
+      slug: string;
+      name: string;
+    } | null;
+  }[];
 };
 
 const formatCompactNumber = (number: number) => {
@@ -42,15 +45,22 @@ export default function Top10HeroFeed() {
     setLoading(true);
 
     const { data, error } = await createClient()
-      .from("movie_stats")
+      .from("movie_download_stats")
       .select(
         `
-        download_count,
-        movies (
-          *,
-         categories!movies_category_id_fkey ( slug, name ) )`,
+    total_downloads,
+    movies (
+      *,
+      movie_categories (
+        categories (
+          slug,
+          name
+        )
       )
-      .order("download_count", { ascending: false })
+    )
+  `,
+      )
+      .order("total_downloads", { ascending: false })
       .limit(10);
 
     if (error) {
@@ -68,7 +78,7 @@ export default function Top10HeroFeed() {
 
     const transformed: Movie[] = data.map((stat: any) => ({
       ...stat.movies,
-      downloads: formatCompactNumber(stat.download_count),
+      downloads: formatCompactNumber(stat.total_downloads),
     }));
 
     setMovies(transformed);
@@ -124,7 +134,7 @@ export default function Top10HeroFeed() {
             ))
           : movies.map((movie, index) => {
               const href = `media/${
-                movie.categories?.slug || "media"
+                movie.movie_categories?.[0]?.categories?.slug || "media"
               }/${movie.slug}`;
 
               return (
@@ -164,9 +174,9 @@ export default function Top10HeroFeed() {
                     </div>
 
                     {/* Category */}
-                    {movie.categories?.name && (
+                    {movie.movie_categories?.[0]?.categories?.name && (
                       <div className="absolute right-2 top-2 rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white/80 backdrop-blur-md">
-                        {movie.categories.name}
+                        {movie.movie_categories[0].categories.name}
                       </div>
                     )}
 
