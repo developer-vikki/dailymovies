@@ -62,6 +62,15 @@ export default function RootLayout({
           src="https://cdn-in.pagesense.io/js/domisecinnovations/f4c3cdc2ab084ceea1a568c83e83da0d.js"
           strategy="afterInteractive"
         /> */}
+
+        <script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="242237"
+          async
+          data-cfasync="false"
+        ></script>
+
+        
       </head>
       <body className="flex flex-col min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
         <ThemeProvider>{children} </ThemeProvider>
