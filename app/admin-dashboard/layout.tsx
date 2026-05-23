@@ -26,10 +26,10 @@ export default async function AdminLayout({
     .eq("id", user.id)
     .single();
 
-  console.log("USER:", user);
-  console.log("PROFILE:", profile);
-  console.log("user_roles:", profile?.user_roles);
-  console.log("ERROR:", error);
+  // console.log("USER:", user);
+  // console.log("PROFILE:", profile);
+  // console.log("user_roles:", profile?.user_roles);
+  // console.log("ERROR:", error);
 
   // NOT ADMIN
   if (

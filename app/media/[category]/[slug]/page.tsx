@@ -414,7 +414,7 @@ export default async function MovieDetailsPage({ params }: PageProps) {
                   href={`/media/${relatedMovie.slug}`}
                   className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:-translate-y-1 hover:border-cyan-400/40"
                 >
-                  <div className="relative aspect-[2/3] overflow-hidden">
+                  <div className="relative aspect-2/3 overflow-hidden">
                     <Image
                       src={relatedMovie.poster_url || "/placeholder.png"}
                       alt={relatedMovie.title}
