@@ -34,7 +34,7 @@ export default async function AdminLayout({
   // NOT ADMIN
   if (
     !profile ||
-    (profile.user_roles !== "admin" && profile.user_roles !== "staff")
+    (profile.user_roles !== "admin" && profile.user_roles !== "moderator")
   ) {
     redirect("/");
   }
