@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Category } from "./types";
+import { Category, DownloadLink } from "./types";
 import { createClient } from "@/lib/supabase/client";
 import CreateCategoryDialog from "./CreateCategoryDialog";
+import DownloadLinks from "./DownloadLinks";
 
 export default function MovieUploadForm() {
   // Initialize Supabase client
@@ -120,7 +121,57 @@ export default function MovieUploadForm() {
         }
       }
 
+      if (movie && downloadLinks.length > 0) {
+        const { error: downloadError } = await supabase
+          .from("movie_download_links")
+          .insert(
+            downloadLinks.map((link, index) => ({
+              movie_id: movie.id,
+              quality: link.quality,
+              server_name: link.server_name,
+              download_url: link.download_url,
+              file_size: link.file_size,
+              is_stream: link.is_stream,
+              display_order: index,
+            })),
+          );
+
+        if (downloadError) {
+          console.error(downloadError);
+          alert(downloadError.message);
+          return;
+        }
+      }
+      if (downloadLinks.length > 0) {
+        const { error: downloadError } = await supabase
+          .from("movie_download_links")
+          .insert(
+            downloadLinks.map((link, index) => ({
+              movie_id: movie.id,
+
+              quality: link.quality,
+
+              server_name: link.server_name,
+
+              download_url: link.download_url,
+
+              file_size: link.file_size,
+
+              is_stream: link.is_stream,
+
+              display_order: index,
+            })),
+          );
+
+        if (downloadError) {
+          console.error(downloadError);
+
+          alert(downloadError.message);
+        }
+      }
+
       alert("Movie uploaded successfully");
+
       if (screenshots.length > 0) {
         for (const screenshot of screenshots) {
           const imageUrl = await uploadScreenshot(screenshot, movie.id);
@@ -153,6 +204,7 @@ export default function MovieUploadForm() {
       setRating("");
 
       setTrailerUrl("");
+      setDownloadLinks([]);
     } catch (error) {
       console.error(error);
 
@@ -218,6 +270,9 @@ export default function MovieUploadForm() {
 
     return data.publicUrl;
   }
+
+  // Download links
+  const [downloadLinks, setDownloadLinks] = useState<DownloadLink[]>([]);
 
   return (
     <div className="space-y-6">
@@ -414,6 +469,8 @@ export default function MovieUploadForm() {
             ))}
           </div>
         </div>
+        {/* download links */}
+        <DownloadLinks links={downloadLinks} setLinks={setDownloadLinks} />
         <button
           onClick={handleSubmit}
           disabled={loading}

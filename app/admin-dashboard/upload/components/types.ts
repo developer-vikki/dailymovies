@@ -11,3 +11,4 @@ export type DownloadLink = {
   file_size: string;
   is_stream: boolean;
 };
+

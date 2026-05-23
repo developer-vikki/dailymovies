@@ -3,14 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import {
-  LayoutDashboard,
-  Film,
-  FolderKanban,
-  Users,
-  Settings,
-  Menu,
-} from "lucide-react";
+import { LayoutDashboard, Users, Settings, Menu, Upload } from "lucide-react";
 
 const menuItems = [
   {
@@ -19,20 +12,11 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Movies",
-    href: "/admin-dashboard/movies",
-    icon: Film,
+    title: "Upload Movie",
+    href: "/admin-dashboard/upload",
+    icon: Upload,
   },
-  {
-    title: "Categories",
-    href: "/admin-dashboard/categories",
-    icon: FolderKanban,
-  },
-  {
-    title: "Users",
-    href: "/admin-dashboard/users",
-    icon: Users,
-  },
+
   {
     title: "Settings",
     href: "/admin-dashboard/settings",

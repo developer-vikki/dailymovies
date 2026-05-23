@@ -1,4 +1,4 @@
-import MovieUploadForm from "../components/MovieUploadForm";
+import MovieUploadForm from "./components/MovieUploadForm";
 
 export default function UploadMoviePage() {
   return (
