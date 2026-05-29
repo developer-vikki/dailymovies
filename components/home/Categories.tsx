@@ -46,7 +46,7 @@ export default function CategoriesSection() {
   return (
     <section className="p-8">
       {/* Heading */}
-      <div className="mb-5">
+      {/* <div className="mb-5">
         <h2 className="text-2xl font-black text-foreground">
           Browse Categories
         </h2>
@@ -54,7 +54,7 @@ export default function CategoriesSection() {
         <p className="mt-1 text-sm text-muted-foreground">
           Explore movies by categories & genres
         </p>
-      </div>
+      </div> */}
 
       {/* Categories */}
       <div className="flex flex-wrap gap-3 p-5 rounded-xl bg-white/5 text-center">
