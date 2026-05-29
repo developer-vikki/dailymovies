@@ -173,6 +173,7 @@ export default function Footer() {
           {/* Scroll Top */}
           <button
             onClick={scrollTop}
+            aria-label="Scroll to top"
             className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-cyan-300"
           >
             <ArrowUp className="h-5 w-5" />
