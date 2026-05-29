@@ -6,9 +6,11 @@ export const revalidate = 3600;
 type Movie = {
   slug: string;
   created_at: string | null;
-  category: {
-    slug: string;
-  } | null;
+  movie_categories: {
+    categories: {
+      slug: string;
+    } | null;
+  }[];
 };
 
 type Category = {
@@ -20,16 +22,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const baseUrl = "https://dailymovies.online";
 
-  // Fetch Movies
+  // Fetch Movies with Categories
   const { data: movies, error: movieError } = await supabase
     .from("movies")
     .select(
       `
       slug,
       created_at,
-      category:movie_categories (
-      slug
-    )
+      movie_categories (
+        categories (
+          slug
+        )
+      )
     `,
     )
     .returns<Movie[]>();
@@ -48,6 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("CATEGORY ERROR:", categoryError);
   }
 
+  // Static Routes
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -57,6 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // Category Routes
   const categoryRoutes: MetadataRoute.Sitemap = (categories ?? []).map(
     (category) => ({
       url: `${baseUrl}/?category=${category.slug}`,
@@ -66,14 +72,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
-  const movieRoutes: MetadataRoute.Sitemap = (movies ?? [])
-    .filter((movie) => movie.slug && movie.category?.slug)
-    .map((movie) => ({
-      url: `${baseUrl}/media/${movie.category!.slug}/${movie.slug}`,
-      lastModified: movie.created_at ? new Date(movie.created_at) : new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    }));
+  // Movie Routes
+  const movieRoutes: MetadataRoute.Sitemap = [];
+
+  (movies ?? []).forEach((movie) => {
+    movie.movie_categories?.forEach((mc) => {
+      const categorySlug = mc.categories?.slug;
+
+      if (categorySlug) {
+        movieRoutes.push({
+          url: `${baseUrl}/media/${categorySlug}/${movie.slug}`,
+          lastModified: movie.created_at
+            ? new Date(movie.created_at)
+            : new Date(),
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+      }
+    });
+  });
 
   return [...staticRoutes, ...categoryRoutes, ...movieRoutes];
 }
