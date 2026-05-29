@@ -12,7 +12,8 @@ export default function Home() {
         <Header />
       </Suspense>
       {/* Hero Section */}
-      <HeroSection />
+      {/* TODO: UN COMMENTS WHEN NEED TO SHOW TRANDING DOWNLOADS */}
+      {/* <HeroSection /> */}
       {/* Categories */}
       <CategoriesSection />
       {/* Movie Feeds */}
