@@ -201,6 +201,9 @@ export default function MovieFeeds() {
         <Image
           src={movie.poster_url || "/placeholder.png"}
           alt={movie.title}
+          loading="lazy"
+          placeholder="blur"
+          blurDataURL="data:image/svg+xml;base64,..."
           width={200}
           height={300}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"

@@ -64,7 +64,7 @@ export default function Header() {
 
               <p
                 aria-hidden="true"
-                className="text-[10px] uppercase tracking-[0.25em] text-white/35"
+                className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground"
               >
                 Movies Hub
               </p>
@@ -90,7 +90,7 @@ export default function Header() {
                   href={item.href}
                   aria-label={item.label}
                   className={`relative text-sm font-medium transition ${
-                    active ? "text-cyan-300" : "text-white/65 hover:text-white"
+                    active ? "text-cyan-300" : "text-muted-foreground hover:text-white"
                   }`}
                 >
                   <span className="flex items-center gap-1.5">

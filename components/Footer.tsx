@@ -129,7 +129,7 @@ export default function Footer() {
 
           {/* Community */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-white/40">
+            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground">
               Community
             </h3>
 
