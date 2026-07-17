@@ -13,7 +13,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       disableTransitionOnChange
     >
       {children}
-      <Footer />
+      {/* <Footer /> */}
     </NextThemesProvider>
   );
 }
